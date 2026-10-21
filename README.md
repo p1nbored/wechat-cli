@@ -380,3 +380,7 @@ This project is built on top of [wechat-decrypt](https://github.com/ylytdeng/wec
 ## ⭐ Star History
 
 [![Star History Chart](https://api.star-history.com/svg?repos=freestylefly/wechat-cli&type=Date)](https://star-history.com/#freestylefly/wechat-cli&Date)
+
+## Codex plugin
+
+Run `& ./codex-plugin/install.ps1` to register **WeChat CLI** in your local plugin list. See [Codex plugin setup](codex-plugin/README.md) for installation and updates.

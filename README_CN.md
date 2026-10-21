@@ -378,3 +378,7 @@ wechat-cli new-messages                    # 后续: 仅返回上次以来的新
 ## ⭐ Star History
 
 [![Star History Chart](https://api.star-history.com/svg?repos=freestylefly/wechat-cli&type=Date)](https://star-history.com/#freestylefly/wechat-cli&Date)
+
+## Codex 插件
+
+运行 `& ./codex-plugin/install.ps1`，即可将 **WeChat CLI** 注册到本地插件列表。安装与更新说明见 [Codex 插件](codex-plugin/README.md)。
