@@ -1,0 +1,22 @@
+{
+  "name": "wechat-cli",
+  "version": "0.1.0",
+  "description": "Query local personal WeChat desktop data using the installed read-only CLI.",
+  "author": {
+    "name": "p1nbored"
+  },
+  "repository": "https://github.com/p1nbored/wechat-cli",
+  "license": "Apache-2.0",
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "WeChat CLI",
+    "shortDescription": "本机个人微信查询",
+    "longDescription": "查询本机个人微信会话、聊天记录、联系人、群成员、收藏、未读和统计，并导出记录。",
+    "developerName": "p1nbored",
+    "category": "Productivity",
+    "capabilities": [
+      "Read"
+    ],
+    "defaultPrompt": "查询我的微信最近会话。"
+  }
+}
