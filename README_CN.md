@@ -119,32 +119,11 @@ wechat-cli init
 
 #### macOS 遇到 `task_for_pid failed` 错误？
 
-在某些 macOS 系统上，即使使用了 `sudo`，`init` 也可能报 `task_for_pid failed`。这是 macOS 的安全策略限制了进程内存访问。
+即使使用 `sudo`，macOS 仍可能拒绝读取微信进程内存。完全磁盘访问权限允许读取数据库文件，并不授予进程内存访问权限。
 
-**WeChat CLI 会自动尝试修复此问题**——对微信重新签名以获取必要权限（会保留微信原有权限）。按提示操作即可：
+遇到此错误时，初始化会停止，不会修改微信签名、权限或运行中的进程。以管理员身份重试仍可能失败。已移除自动重签功能和手动重签指引：保留受限权限进行临时签名，可能导致微信无法启动。
 
-1. 工具会自动对微信重新签名
-2. 完全退出微信（不是最小化）
-3. 重新打开微信并登录
-4. 再次执行 `sudo wechat-cli init`
-
-如果自动签名失败，可以手动执行：
-
-```bash
-# 先退出微信，然后：
-sudo codesign --force --sign - --entitlements /dev/stdin /Applications/WeChat.app <<'EOF'
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-    <key>com.apple.security.get-task-allow</key>
-    <true/>
-</dict>
-</plist>
-EOF
-```
-
-> **温馨提示：** 重新签名是安全的，**不会**导致封号或账号异常。但可能影响微信的部分功能或自动更新。如果发现任何功能异常（如搜一搜无法使用），或想更新到微信最新版，直接从[微信官网](https://mac.weixin.qq.com/)重新下载安装即可，**无需重新执行 init**，已有的配置和密钥不受影响。
+如果旧版初始化修改了微信，导致应用打不开，请从[微信官网](https://mac.weixin.qq.com/)重新下载，仅替换微信应用，不要删除微信数据目录。这能恢复官方应用，但不能解除进程内存访问限制。本版本尚未提供适用于拒绝 `task_for_pid` 的官方微信客户端的已验证提取方案。
 
 ### 第二步 — 开始使用
 

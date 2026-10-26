@@ -121,32 +121,11 @@ Without this permission, the tool cannot access WeChat's data directory and key 
 
 #### macOS: `task_for_pid failed` Error
 
-On some macOS systems, `init` may fail with `task_for_pid failed` even when running with `sudo`. This is due to macOS security restrictions on process memory access.
+macOS can deny access to WeChat process memory even when `init` runs with `sudo`. Full Disk Access allows reading database files; it does not grant process memory access.
 
-**WeChat CLI will automatically attempt to fix this** by re-signing WeChat with the required entitlement (original entitlements are preserved). Just follow the on-screen instructions:
+When this happens, initialization stops without changing WeChat's signature, entitlements, or running process. Repeating the command as administrator may still fail. Automatic and manual re-signing instructions have been removed: ad-hoc signing with restricted entitlements can make WeChat unable to launch.
 
-1. The tool will re-sign WeChat automatically
-2. Quit WeChat completely (not just minimize)
-3. Reopen WeChat and log in
-4. Run `sudo wechat-cli init` again
-
-If auto re-signing fails, you can do it manually:
-
-```bash
-# Quit WeChat first, then:
-sudo codesign --force --sign - --entitlements /dev/stdin /Applications/WeChat.app <<'EOF'
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-    <key>com.apple.security.get-task-allow</key>
-    <true/>
-</dict>
-</plist>
-EOF
-```
-
-> **Heads up:** Re-signing WeChat is safe and will **not** cause account issues or bans. However, it may affect WeChat's auto-update mechanism. If you notice any feature not working properly, or want to update WeChat to the latest version, simply re-download and reinstall WeChat from the [official website](https://mac.weixin.qq.com/) — no need to re-run `init`, your existing config and keys will continue to work.
+If a previous initialization attempt modified WeChat and it no longer opens, replace only the application with a fresh download from the [official website](https://mac.weixin.qq.com/). Do not delete the WeChat data directory. This restores the official application but does not resolve the memory-access restriction. This release does not provide a verified extraction method for an official client that denies `task_for_pid`.
 
 ### Step 2 — Use It
 
