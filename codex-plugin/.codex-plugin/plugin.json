@@ -1,6 +1,6 @@
 {
   "name": "wechat-cli",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Query local personal WeChat desktop data using the installed read-only CLI.",
   "author": {
     "name": "p1nbored"

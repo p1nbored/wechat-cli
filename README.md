@@ -362,4 +362,19 @@ This project is built on top of [wechat-decrypt](https://github.com/ylytdeng/wec
 
 ## Codex plugin
 
-Run `& ./codex-plugin/install.ps1` to register **WeChat CLI** in your local plugin list. See [Codex plugin setup](codex-plugin/README.md) for installation and updates.
+From the repository root, register **WeChat CLI** in your local Codex plugin list:
+
+```sh
+# macOS (installer: Python 3.9+; CLI: Python 3.10+)
+python3 codex-plugin/install.py
+```
+
+```powershell
+# Windows
+& ./codex-plugin/install.ps1
+```
+
+Preserve and verify an existing CLI installation first. Installing the plugin
+does not initialize WeChat. On macOS, grant Full Disk Access to Codex or the
+terminal actually running queries. See [Codex plugin setup](codex-plugin/README.md)
+for installation, updates, and verification.

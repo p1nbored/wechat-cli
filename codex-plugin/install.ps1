@@ -16,10 +16,8 @@ if (Test-Path -LiteralPath $marketplaceFile) {
 }
 
 New-Item -ItemType Directory -Force -Path $pluginDestination | Out-Null
-foreach ($item in Get-ChildItem -LiteralPath $PSScriptRoot -Force) {
-    if ($item.Name -ne 'install.ps1') {
-        Copy-Item -LiteralPath $item.FullName -Destination $pluginDestination -Recurse -Force
-    }
+foreach ($name in @('plugin.json', '.codex-plugin', 'skills', 'README.md')) {
+    Copy-Item -LiteralPath (Join-Path $PSScriptRoot $name) -Destination $pluginDestination -Recurse -Force
 }
 
 $entry = [pscustomobject]@{

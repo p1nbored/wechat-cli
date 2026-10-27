@@ -360,4 +360,16 @@ wechat-cli new-messages                    # 后续: 仅返回上次以来的新
 
 ## Codex 插件
 
-运行 `& ./codex-plugin/install.ps1`，即可将 **WeChat CLI** 注册到本地插件列表。安装与更新说明见 [Codex 插件](codex-plugin/README.md)。
+在仓库根目录运行对应安装器，将 **WeChat CLI** 注册到 Codex 的本地插件列表：
+
+```sh
+# macOS（安装器支持 Python 3.9+；CLI 需要 Python 3.10+）
+python3 codex-plugin/install.py
+```
+
+```powershell
+# Windows
+& ./codex-plugin/install.ps1
+```
+
+先保留并验证已有 CLI 安装。安装插件不会初始化微信；macOS 查询需要为实际运行命令的 Codex 或终端开启完全磁盘访问权限。安装、更新和验证步骤见 [Codex 插件](codex-plugin/README.md)。
