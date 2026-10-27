@@ -125,7 +125,7 @@ macOS can deny access to WeChat process memory even when `init` runs with `sudo`
 
 When this happens, initialization stops without changing WeChat's signature, entitlements, or running process. Repeating the command as administrator may still fail. Automatic and manual re-signing instructions have been removed: ad-hoc signing with restricted entitlements can make WeChat unable to launch.
 
-If a previous initialization attempt modified WeChat and it no longer opens, replace only the application with a fresh download from the [official website](https://mac.weixin.qq.com/). Do not delete the WeChat data directory. This restores the official application but does not resolve the memory-access restriction. This release does not provide a verified extraction method for an official client that denies `task_for_pid`.
+If a previous initialization attempt modified WeChat and it no longer opens, replace only the application with a fresh download from the [official website](https://mac.weixin.qq.com/). Do not delete the WeChat data directory. This restores the official application but does not resolve the memory-access restriction. Direct memory extraction from an official client that denies `task_for_pid` remains unsupported. For the separate manual temporary-copy capture and verified key-import workflow, see [macOS initialization](docs/macos-initialization.md).
 
 ### Step 2 — Use It
 

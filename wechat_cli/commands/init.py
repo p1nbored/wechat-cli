@@ -12,10 +12,26 @@ from ..core.config import STATE_DIR, CONFIG_FILE, KEYS_FILE, auto_detect_db_dir
 @click.command()
 @click.option("--db-dir", default=None, help="微信数据目录路径（默认自动检测）")
 @click.option("--force", is_flag=True, help="强制重新提取密钥")
-def init(db_dir, force):
+@click.option("--import-keys", "capture_path", type=click.Path(exists=True, dir_okay=False), help="验证并导入临时副本捕获的密钥（不覆盖已有配置）")
+def init(db_dir, force, capture_path=None):
     """初始化 wechat-cli：提取密钥并生成配置"""
     click.echo("WeChat CLI 初始化")
     click.echo("=" * 40)
+
+    if capture_path is not None:
+        if force:
+            raise click.UsageError("--import-keys 不允许与 --force 同用")
+        selected = db_dir or auto_detect_db_dir()
+        if selected is None:
+            raise click.ClickException("请用 --db-dir 指定待验证的 db_storage 目录")
+        from pathlib import Path
+        from ..keys.imported import import_keys
+        try:
+            count = import_keys(Path(capture_path), Path(selected), Path(STATE_DIR))
+        except (RuntimeError, OSError) as error:
+            raise click.ClickException(str(error)) from None
+        click.echo(f"[+] 已验证并导入 {count} 个数据库密钥；初始化完成")
+        return
 
     # 1. 检查是否已初始化
     if os.path.exists(CONFIG_FILE) and os.path.exists(KEYS_FILE) and not force:
