@@ -11,6 +11,7 @@ from datetime import datetime
 import zstandard as zstd
 
 from .key_utils import key_path_variants
+from .attachments import resolve_file_attachment
 
 _zstd_dctx = zstd.ZstdDecompressor()
 _XML_UNSAFE_RE = re.compile(r'<!DOCTYPE|<!ENTITY', re.IGNORECASE)
@@ -177,22 +178,10 @@ def _format_app_message_text(content, local_type, is_group, chat_username, chat_
             quote_text += f"\n  ↳ {prefix}{ref_content}"
         return quote_text
     if app_type == 6:
-        # Try to resolve file path
         if resolve_media and db_dir:
-            msg_dir = os.path.join(os.path.dirname(db_dir), "msg", "file")
-            if title and os.path.isdir(msg_dir):
-                from datetime import datetime as _dt
-                dt = _dt.fromtimestamp(create_time_ts) if create_time_ts else None
-                if dt:
-                    file_dir = os.path.join(msg_dir, dt.strftime("%Y-%m"))
-                    if os.path.isdir(file_dir):
-                        target = os.path.join(file_dir, title)
-                        if os.path.isfile(target):
-                            return f"[文件] {title}\n  {target}"
-                        # Fuzzy match
-                        for f in os.listdir(file_dir):
-                            if title in f or f in title:
-                                return f"[文件] {title}\n  {os.path.join(file_dir, f)}"
+            path = resolve_file_attachment(db_dir, appmsg, create_time_ts)
+            if path:
+                return f"[文件] {title}\n  {path}"
         return f"[文件] {title}" if title else "[文件]"
     if app_type == 5:
         return f"[链接] {title}" if title else "[链接]"
@@ -236,6 +225,16 @@ def _resolve_media_path(db_dir, content, local_type, create_time_ts, chat_userna
         (path, exists) 元组，path 为 None 表示无法解析
     """
     base_type = local_type & 0xFFFFFFFF
+    if base_type == 49 and content:
+        root = _parse_xml_root(content)
+        appmsg = root.find('.//appmsg') if root is not None else None
+        if appmsg is not None:
+            _, sub_type = _split_msg_type(local_type)
+            if _parse_int(appmsg.findtext('type'), sub_type) == 6:
+                path = resolve_file_attachment(db_dir, appmsg, create_time_ts)
+                return path, path is not None
+        return None, False
+
     wechat_base = os.path.dirname(db_dir)
     msg_dir = os.path.join(wechat_base, "msg")
     if not os.path.isdir(msg_dir):
@@ -244,28 +243,6 @@ def _resolve_media_path(db_dir, content, local_type, create_time_ts, chat_userna
     from datetime import datetime
     dt = datetime.fromtimestamp(create_time_ts)
     date_prefix = dt.strftime("%Y-%m")
-
-    # 文件消息 (type 49, sub 6): msg/file/YYYY-MM/filename
-    if base_type == 49 and content:
-        root = _parse_xml_root(content)
-        if root is not None:
-            appmsg = root.find('.//appmsg')
-            if appmsg is not None:
-                app_type = _parse_int((appmsg.findtext('type') or '').strip())
-                if app_type == 6:
-                    title = (appmsg.findtext('title') or '').strip()
-                    if title:
-                        file_dir = os.path.join(msg_dir, "file", date_prefix)
-                        if os.path.isdir(file_dir):
-                            # 精确匹配文件名
-                            target = os.path.join(file_dir, title)
-                            if os.path.isfile(target):
-                                return target, True
-                            # 模糊匹配（文件名可能有细微差异）
-                            for f in os.listdir(file_dir):
-                                if title in f or f in title:
-                                    return os.path.join(file_dir, f), True
-        return None, False
 
     # 图片消息 (type 3): msg/attach/<hash>/YYYY-MM/Img/*.dat
     # 视频/语音消息: msg/video/YYYY-MM/ 或 msg/attach/
@@ -317,7 +294,7 @@ def _format_message_text(local_id, local_type, content, is_group, chat_username,
 
     media_path = None
     media_exists = False
-    if resolve_media and db_dir and content:
+    if resolve_media and db_dir and content and base_type != 49:
         try:
             media_path, media_exists = _resolve_media_path(
                 db_dir, content, local_type, create_time_ts, chat_username

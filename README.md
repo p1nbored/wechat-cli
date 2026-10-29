@@ -203,10 +203,13 @@ wechat-cli history "Alice"                 # Last 50 messages
 wechat-cli history "Alice" --limit 100 --offset 50
 wechat-cli history "Team" --start-time "2026-04-01" --end-time "2026-04-03"
 wechat-cli history "Alice" --type link     # Only links
+wechat-cli history "Alice" --type file --media  # Locate downloaded files
 wechat-cli history "Alice" --format text
 ```
 
-**Options:** `--limit`, `--offset`, `--start-time`, `--end-time`, `--type`, `--format`
+**Options:** `--limit`, `--offset`, `--start-time`, `--end-time`, `--type`, `--format`, `--media`
+
+For file attachments, `--media` searches every month under the current account's `msg/file/`, including numbered duplicates such as `report(1).pdf`, `report (1).pdf`, and full-width parentheses. On macOS it then searches the account's `cache/` and `temp/` trees. Message size and MD5 metadata are checked when available; a known MD5 also enables lookup of files named after that digest. Downloads, the message month, and original filenames take precedence. Equally ranked candidates that cannot be distinguished produce only the filename. This does not download files or search custom save locations or global system caches; caches without a matching filename or MD5 are not supported.
 
 ### `search` — Search Messages
 

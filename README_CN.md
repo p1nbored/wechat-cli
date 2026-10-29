@@ -201,10 +201,13 @@ wechat-cli history "张三"                  # 最近 50 条消息
 wechat-cli history "张三" --limit 100 --offset 50
 wechat-cli history "交流群" --start-time "2026-04-01" --end-time "2026-04-03"
 wechat-cli history "张三" --type link      # 只看链接
+wechat-cli history "张三" --type file --media  # 查找已下载文件的本地路径
 wechat-cli history "张三" --format text
 ```
 
-**选项：** `--limit`、`--offset`、`--start-time`、`--end-time`、`--type`、`--format`
+**选项：** `--limit`、`--offset`、`--start-time`、`--end-time`、`--type`、`--format`、`--media`
+
+`--media` 的文件附件查找覆盖当前账号 `msg/file/` 的所有月份，支持 `文件(1).pdf`、`文件 (1).pdf` 和全角括号重名后缀。macOS 还会依次搜索账号内的 `cache/`、`temp/` 子目录。消息提供大小或 MD5 时会校验候选文件；有 MD5 时也支持以该 MD5 命名的缓存文件。优先下载目录、消息月份及原文件名；同优先级有多个候选且无法区分时，只显示文件名。此功能不会下载文件，也不搜索自定义保存目录或系统全局缓存；无法关联到文件名或 MD5 的缓存暂不支持。
 
 ### `search` — 搜索消息
 
